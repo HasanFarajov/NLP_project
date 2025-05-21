@@ -66,8 +66,13 @@ elif option == 'Upload File':
             stringio = StringIO(uploaded_file.getvalue().decode("utf-8"))
             text = stringio.read()
         elif uploaded_file.type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-            doc = Document(uploaded_file)
-            text = "\n".join([para.text for para in doc.paragraphs if para.text.strip()])
+            try:
+                doc = Document(uploaded_file)
+                text = "\n".join([para.text for para in doc.paragraphs if para.text.strip()])
+            except Exception as e:
+                st.error("⚠️ Failed to read .docx file. Make sure the file is not corrupted.")
+                st.stop()
+
 
 if text:
     N = st.slider("Number of summary sentences", min_value=1, max_value=10, value=3)
